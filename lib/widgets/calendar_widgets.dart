@@ -24,11 +24,17 @@ class CalendarGrid extends StatelessWidget {
     final daysInMonth = lastDayOfMonth.day;
 
     return GridView.builder(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(), // Prevent internal scrolling
+      padding: const EdgeInsets.all(8),
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 7,
         childAspectRatio: 1,
+        crossAxisSpacing: 4,
+        mainAxisSpacing: 4,
       ),
       itemCount: 42, // 6 weeks * 7 days
+      
       itemBuilder: (context, index) {
         final dayNumber = index - firstWeekday + 1;
 
@@ -43,14 +49,19 @@ class CalendarGrid extends StatelessWidget {
             date.month == selectedDate!.month &&
             date.year == selectedDate!.year;
 
+        // Check if it's today
+        final now = DateTime.now();
+        final isToday = date.day == now.day &&
+            date.month == now.month &&
+            date.year == now.year;
+
         return GestureDetector(
           onTap: () => onDateTapped(date),
           child: Container(
-            margin: const EdgeInsets.all(2),
             decoration: BoxDecoration(
-              color: isSelected ? Colors.blue[100] : Colors.transparent,
+              color: _getDateBackgroundColor(isSelected, isToday),
               borderRadius: BorderRadius.circular(8),
-              border: isSelected ? Border.all(color: Colors.blue, width: 2) : null,
+              border: _getDateBorder(isSelected, isToday),
             ),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -58,31 +69,55 @@ class CalendarGrid extends StatelessWidget {
                 Text(
                   dayNumber.toString(),
                   style: TextStyle(
-                    fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-                    color: isSelected ? Colors.blue[800] : Colors.black,
+                    fontWeight: isSelected || isToday ? FontWeight.bold : FontWeight.normal,
+                    color: _getDateTextColor(isSelected, isToday),
+                    fontSize: 14,
                   ),
                 ),
                 if (tasksForDay.isNotEmpty) ...[
-                  const SizedBox(height: 2),
-                  Wrap(
-                    children: tasksForDay.take(3).map((task) {
-                      return Container(
-                        width: 6,
-                        height: 6,
-                        margin: const EdgeInsets.symmetric(horizontal: 1),
-                        decoration: BoxDecoration(
-                          color: TaskUtils.getTaskStatusColor(task.status),
-                          shape: BoxShape.circle,
-                        ),
-                      );
-                    }).toList(),
-                  ),
+                  const SizedBox(height: 4),
+                  _buildTaskIndicators(tasksForDay),
                 ],
               ],
             ),
           ),
         );
       },
+    );
+  }
+
+  Color _getDateBackgroundColor(bool isSelected, bool isToday) {
+    if (isSelected) return Colors.blue[100]!;
+    if (isToday) return Colors.orange[50]!;
+    return Colors.transparent;
+  }
+
+  Border? _getDateBorder(bool isSelected, bool isToday) {
+    if (isSelected) return Border.all(color: Colors.blue, width: 2);
+    if (isToday) return Border.all(color: Colors.orange, width: 1);
+    return null;
+  }
+
+  Color _getDateTextColor(bool isSelected, bool isToday) {
+    if (isSelected) return Colors.blue[800]!;
+    if (isToday) return Colors.orange[800]!;
+    return Colors.black;
+  }
+
+  Widget _buildTaskIndicators(List<Task> tasks) {
+    return Wrap(
+      alignment: WrapAlignment.center,
+      children: tasks.take(3).map((task) {
+        return Container(
+          width: 6,
+          height: 6,
+          margin: const EdgeInsets.symmetric(horizontal: 1),
+          decoration: BoxDecoration(
+            color: TaskUtils.getTaskStatusColor(task.status),
+            shape: BoxShape.circle,
+          ),
+        );
+      }).toList(),
     );
   }
 }
@@ -92,22 +127,25 @@ class CalendarHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceAround,
-      children: ['S', 'M', 'T', 'W', 'T', 'F', 'S']
-          .map((day) => SizedBox(
-                width: 40,
-                child: Center(
-                  child: Text(
-                    day,
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: Colors.grey,
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: ['S', 'M', 'T', 'W', 'T', 'F', 'S']
+            .map((day) => Expanded(
+                  child: Center(
+                    child: Text(
+                      day,
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: Colors.grey,
+                        fontSize: 14,
+                      ),
                     ),
                   ),
-                ),
-              ))
-          .toList(),
+                ))
+            .toList(),
+      ),
     );
   }
 }
@@ -126,7 +164,12 @@ class TaskTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+      elevation: 2,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(8),
+      ),
       child: ListTile(
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         leading: Container(
           width: 12,
           height: 12,
@@ -135,11 +178,36 @@ class TaskTile extends StatelessWidget {
             shape: BoxShape.circle,
           ),
         ),
-        title: Text(task.title),
-        subtitle: Text('${task.description} • ${TaskUtils.getTaskStatusText(task.status)}'),
-        trailing: Text(
-          '${task.date.month}/${task.date.day}',
-          style: const TextStyle(fontWeight: FontWeight.bold),
+        title: Text(
+          task.title,
+          style: const TextStyle(
+            fontWeight: FontWeight.w600,
+            fontSize: 16,
+          ),
+        ),
+        subtitle: Padding(
+          padding: const EdgeInsets.only(top: 4),
+          child: Text(
+            '${task.description} • ${TaskUtils.getTaskStatusText(task.status)}',
+            style: TextStyle(
+              color: Colors.grey[600],
+              fontSize: 14,
+            ),
+          ),
+        ),
+        trailing: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+          decoration: BoxDecoration(
+            color: Colors.grey[100],
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Text(
+            '${task.date.month}/${task.date.day}',
+            style: const TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 12,
+            ),
+          ),
         ),
         onTap: onTap,
       ),
@@ -161,22 +229,35 @@ class MonthNavigationHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        IconButton(
-          icon: const Icon(Icons.chevron_left, color: Colors.black),
-          onPressed: onPreviousMonth,
-        ),
-        Text(
-          TaskUtils.getMonthYearString(currentMonth),
-          style: const TextStyle(color: Colors.black, fontSize: 16),
-        ),
-        IconButton(
-          icon: const Icon(Icons.chevron_right, color: Colors.black),
-          onPressed: onNextMonth,
-        ),
-      ],
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          IconButton(
+            icon: const Icon(Icons.chevron_left, color: Colors.black, size: 28),
+            onPressed: onPreviousMonth,
+            splashRadius: 20,
+          ),
+          Expanded(
+            child: Center(
+              child: Text(
+                TaskUtils.getMonthYearString(currentMonth),
+                style: const TextStyle(
+                  color: Colors.black, 
+                  fontSize: 18,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+          ),
+          IconButton(
+            icon: const Icon(Icons.chevron_right, color: Colors.black, size: 28),
+            onPressed: onNextMonth,
+            splashRadius: 20,
+          ),
+        ],
+      ),
     );
   }
 }

@@ -73,7 +73,7 @@ class _SchedulePageState extends State<SchedulePage> {
             pinned: true,
             floating: false,
             automaticallyImplyLeading: false,
-            backgroundColor: Colors.white,
+            backgroundColor: Colors.orange,
             elevation: 0,
             title: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -97,19 +97,18 @@ class _SchedulePageState extends State<SchedulePage> {
               ],
             ),
           ),
-          // Sticky Month Header
+          // Sticky Month Header - Fixed
           SliverAppBar(
             pinned: true,
-            expandedHeight: 50,
+            floating: false,
             automaticallyImplyLeading: false,
-            backgroundColor: Colors.white,
-            flexibleSpace: FlexibleSpaceBar(
-              centerTitle: true,
-              title: MonthNavigationHeader(
-                currentMonth: _currentMonth,
-                onPreviousMonth: _previousMonth,
-                onNextMonth: _nextMonth,
-              ),
+            backgroundColor: Colors.white, // Set consistent background color
+            elevation: 0,
+            toolbarHeight: 50, // Set fixed height
+            title: MonthNavigationHeader(
+              currentMonth: _currentMonth,
+              onPreviousMonth: _previousMonth,
+              onNextMonth: _nextMonth,
             ),
           ),
           // Collapsible Calendar
@@ -120,6 +119,28 @@ class _SchedulePageState extends State<SchedulePage> {
               minHeight: 0,
               maxHeight: 350,
               child: _buildCalendar(),
+            ),
+          ),
+          // Divider line after calendar
+          SliverToBoxAdapter(
+            child: Container(
+              margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              height: 1,
+              color: Colors.grey[300],
+            ),
+          ),
+          // Spacing and "Upcoming Tasks" header
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+              child: Text(
+                "Upcoming Tasks",
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.grey[800],
+                ),
+              ),
             ),
           ),
           // Upcoming Task List
@@ -141,14 +162,14 @@ class _SchedulePageState extends State<SchedulePage> {
       ),
     );
   }
+  
   Widget _buildCalendar() {
     return Container(
-      color: Colors.grey[100],
-      padding: const EdgeInsets.all(16),
+      color: const Color.fromRGBO(245, 245, 245, 1),
+      padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Column(
         children: [
           const CalendarHeader(),
-          const SizedBox(height: 16),
           Expanded(
             child: CalendarGrid(
               currentMonth: _currentMonth,

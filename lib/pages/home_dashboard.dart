@@ -19,7 +19,7 @@ class HomeDashboard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const MangoTrackAppBar(notificationCount: 0),
+      appBar: const MangoTrackAppBar(notificationCount: 1), // 1 notifications for now
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -30,6 +30,8 @@ class HomeDashboard extends StatelessWidget {
                 print('Navigating to detailed stats page');
               },
             ),
+            const SizedBox(height: 22), // Spacing between sections
+            //recent inspected trees section
             RecentInspectedTreesSection(
               trees: recentTrees,
               onTreeTap: (tree) {

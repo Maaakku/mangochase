@@ -11,7 +11,7 @@ class MangoTrackApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'MangoTrack',
+      title: 'CropChaser',
       theme: ThemeData(
         primarySwatch: Colors.orange,
       ),
