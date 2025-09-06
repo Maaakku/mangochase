@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../models/tree_models.dart';
-import '../data/sample_data.dart';
+import '../data/tree_models_data.dart';
 import '../utils/tree_utils.dart';
 import '../widgets/pie_chart_painter.dart';
 import '../widgets/cluster_grid_widget.dart';

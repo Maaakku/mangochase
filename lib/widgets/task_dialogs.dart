@@ -83,6 +83,7 @@ class TaskDialogs {
                     description: descriptionController.text,
                     date: date,
                     status: selectedStatus,
+                    isCompleted: false, // New tasks start as incomplete
                   ));
                   Navigator.pop(context);
                 }
@@ -184,6 +185,7 @@ class TaskDialogs {
                     description: descriptionController.text,
                     date: task.date,
                     status: selectedStatus,
+                    isCompleted: task.isCompleted, // Preserve completion status when editing
                   ));
                   Navigator.pop(context);
                 }

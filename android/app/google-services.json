@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "267284565294",
+    "firebase_url": "https://cropchase-a3bc7-default-rtdb.asia-southeast1.firebasedatabase.app",
+    "project_id": "cropchase-a3bc7",
+    "storage_bucket": "cropchase-a3bc7.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:267284565294:android:da5c6d2b61219087dbfebf",
+        "android_client_info": {
+          "package_name": "com.example.mangochase"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB8k5RDuoctNEzgjd5BInEFfz7BFurG3eo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

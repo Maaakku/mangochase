@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
-import 'pages/main_screen.dart'; // Import your MainScreen
+import 'package:firebase_core/firebase_core.dart'; // add this
+import 'pages/main_screen.dart'; // your MainScreen
 
-void main() {
-  runApp(const MangoTrackApp());
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized(); 
+  await Firebase.initializeApp(); // initialize Firebase
+  runApp(const MyApp());
 }
 
-class MangoTrackApp extends StatelessWidget {
-  const MangoTrackApp({super.key});
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -15,7 +18,7 @@ class MangoTrackApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.orange,
       ),
-      home: const MainScreen(), // <-- Use MainScreen for tab navigation
+      home: MainScreen(key: MainScreen.globalKey), 
       debugShowCheckedModeBanner: false,
     );
   }
